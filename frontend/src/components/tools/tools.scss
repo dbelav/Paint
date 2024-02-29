@@ -1,0 +1,97 @@
+.tools {
+    width: 100%;
+    background-color: #fff;
+    // height: 50px;
+
+    .toolsTop {
+        width: 100%;
+        height: 50px;
+        display: flex;
+        box-shadow: 0px 4px 4px 0px #00000040;
+
+
+        .toolsTopLeft {
+            width: 50%;
+            height: 40px;
+            margin-left: 80px;
+            display: flex;
+
+            .pencil {
+                background-image: url("../../assets/brush.png");
+            }
+
+            .rect {
+                background-image: url("../../assets/rect.png");
+            }
+
+            .circle {
+                background-image: url("../../assets/circle.png");
+            }
+
+            .eraser {
+                background-image: url("../../assets/eraser.png");
+            }
+
+            .line {
+                background-image: url("../../assets/line.png");
+            }
+
+            .rgb {
+                height: 45px;
+            }
+        }
+    }
+
+    .toolsTopRight {
+        height: 40px;
+        width: 50%;
+        display: flex;
+        justify-content: end;
+        margin-right: 80px;
+
+        .undo {
+            background-image: url("../../assets/undo.png");
+        }
+
+        .redo {
+            background-image: url("../../assets/redo.png");
+        }
+
+        .save {
+            background-image: url("../../assets/save.png");
+        }
+    }
+
+    .toolItem {
+        width: 45px;
+        height: 45px;
+        background-color: transparent;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: none;
+        cursor: pointer;
+    }
+
+    .toolsBottom{
+        height: 50px;
+        box-shadow: 0px 4px 4px 0px #00000040;
+        display: flex;
+        align-items: center;
+        width: 100%;
+
+
+        .toolsBottomTitle{
+            margin-right: 30px;
+            margin-left: 86px;
+            font-size: 18px;
+        }
+
+        .toolsBottomInput{
+            width: 55px;
+            height: 28px;
+            border: 2px #000 solid;
+            font-size: 18px;
+            text-align: center;
+        }
+    }
+}
