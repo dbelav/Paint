@@ -4,15 +4,22 @@ import { lineDown, lineMove } from '../toolsitem/line'
 import { rectDown, rectMove } from '../toolsitem/rect'
 import { eraserMove } from '../toolsitem/eraser'
 import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+
 
 const useSelectTool = (tool) => {
+
     const { username } = useSelector((state) => state.canvasState)
+    const params = useParams()
 
     function selectToolDown(objectArgs) {
+
         if(objectArgs.socket){
+
             objectArgs.socket.send(
                 JSON.stringify({
                     username,
+                    id: params.id,
                     method: 'downDraw',
                     tool,
                     color: objectArgs.color,
@@ -25,7 +32,6 @@ const useSelectTool = (tool) => {
             )
         }
  
-
         switch (tool) {
             case 'pencil':
                 pencilDown(objectArgs)
@@ -44,9 +50,11 @@ const useSelectTool = (tool) => {
     function selectToolMove(objectArgs) {
         
         if(objectArgs.socket){
+            
             objectArgs.socket.send(
                 JSON.stringify({
                     username,
+                    id: params.id,
                     method: 'moveDraw',
                     tool,
                     color: objectArgs.color,
@@ -77,6 +85,7 @@ const useSelectTool = (tool) => {
                 break
         }
     }
+
     return { selectToolDown, selectToolMove }
 }
 

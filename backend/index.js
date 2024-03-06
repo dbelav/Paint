@@ -8,8 +8,10 @@ const PORT = process.env.PORT || 5000
 app.ws('/', (ws, req) => {
     ws.on('message', (msg) => {
         msg = JSON.parse(msg)
+
         switch (msg.method) {
             case 'connection':
+                console.log(msg)
                 connectionHandler(ws, msg)
                 break
             case 'moveDraw':

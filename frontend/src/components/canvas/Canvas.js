@@ -1,11 +1,11 @@
 import { useRef, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { pencilDown, pencilMove } from '../../toolsitem/pencil'
 import { switchMouseClick, setMouseX, setMouseY } from '../tools/toolsSlice'
 import useSelectTool from '../../hooks/useSelectTool'
 import { useParams } from 'react-router-dom'
 
 import './canvas.scss'
+
 
 const socketConnection = new WebSocket('ws://localhost:5000')
 
@@ -14,7 +14,7 @@ const Canvas = () => {
 
     const canvasDomElement = useRef(null)
     const drawElementRef = useRef(null)
-    const [websocketTool, setWebsocketTool] = useState('')
+    const [websocketTool, setWebsocketTool] = useState('pencil')
     const params = useParams()
 
     const { isMouseDown } = useSelector((state) => state.toolsState)
@@ -23,8 +23,6 @@ const Canvas = () => {
     const { selectedTool } = useSelector((state) => state.toolsState)
     const { lineThickness } = useSelector((state) => state.toolsState)
     const { color } = useSelector((state) => state.toolsState)
-    const { undoList } = useSelector((state) => state.toolsState)
-    const { redoList } = useSelector((state) => state.toolsState)
     const { username } = useSelector((state) => state.canvasState)
     const { selectToolDown, selectToolMove } = useSelectTool(selectedTool) // for user drawing
     const websocketSelectTool = useSelectTool(websocketTool) // for websocket drawing
@@ -35,35 +33,23 @@ const Canvas = () => {
 
     useEffect(() => {
         if (username) {
-            socketConnection.onopen = () => {
-                socketConnection.send(
-                    JSON.stringify({
-                        id: params.id,
-                        username,
-                        method: 'connection',
-                    })
-                )
-            }
-            socketConnection.onmessage = (e) => {
-                const message = JSON.parse(e.data)
-                switch (message.method) {
-                    case 'connection':
-                        console.log('Connected: ' + message.username)
-                        break
-                }
-            }
+            socketConnection.send(
+                JSON.stringify({
+                    id: params.id,
+                    username,
+                    method: 'connection',
+                })
+            )
         }
     }, [username, socketConnection])
 
     function mouseDown(e) {
-        const drawElement = drawElementRef.current
-
         dispatch(switchMouseClick(true))
         dispatch(setMouseX(e.nativeEvent.offsetX))
         dispatch(setMouseY(e.nativeEvent.offsetY))
 
         selectToolDown({
-            drawElement,
+            drawElement: drawElementRef.current,
             canvasDomElement: canvasDomElement,
             e,
             lineThickness,
@@ -79,40 +65,43 @@ const Canvas = () => {
     }
 
     useEffect(() => {
-        const drawElement = canvasDomElement.current.getContext('2d')
-
         socketConnection.onmessage = (e) => {
             const data = JSON.parse(e.data)
-            setWebsocketTool(data.tool)
-
             if (data.username != username) {
 
-                if (data.method === 'downDraw') {
-                    websocketSelectTool.selectToolDown({
-                        drawElement,
-                        canvasDomElement: canvasDomElement,
-                        e: null,
-                        lineThickness: data.lineThickness,
-                        color: data.color,
-                        startX: data.startX,
-                        startY: data.startY,
-                        x: data.x,
-                        y: data.y,
-                    })
-                }
+                switch (data.method) {
+                    case 'connection':
+                        console.log('Connected: ' + data.username)
+                        break
 
-                if (data.method === 'moveDraw') {
-                    websocketSelectTool.selectToolMove({
-                        drawElement,
-                        canvasDomElement: canvasDomElement,
-                        e: null,
-                        lineThickness: data.lineThickness,
-                        color: data.color,
-                        startX: data.startX,
-                        startY: data.startY,
-                        x: data.x,
-                        y: data.y,
-                    })
+                    case 'downDraw':
+                        setWebsocketTool(data.tool)
+                        websocketSelectTool.selectToolDown({
+                            drawElement: drawElementRef.current,
+                            canvasDomElement: canvasDomElement,
+                            e: null,
+                            lineThickness: data.lineThickness,
+                            color: data.color,
+                            startX: data.startX,
+                            startY: data.startY,
+                            x: data.x,
+                            y: data.y,
+                        })
+                        break
+
+                    case 'moveDraw':
+                        websocketSelectTool.selectToolMove({
+                            drawElement: drawElementRef.current,
+                            canvasDomElement: canvasDomElement,
+                            e: null,
+                            lineThickness: data.lineThickness,
+                            color: data.color,
+                            startX: data.startX,
+                            startY: data.startY,
+                            x: data.x,
+                            y: data.y,
+                        })
+                        break
                 }
             }
         }
@@ -133,15 +122,6 @@ const Canvas = () => {
             })
         }
     }
-
-    function undo() {
-        const drawElement = drawElementRef.current
-        if (undoList.length > 0) {
-            let dataUrl
-        }
-    }
-
-    function redo() {}
 
     return (
         <div className="canvas">

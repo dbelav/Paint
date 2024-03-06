@@ -31,7 +31,6 @@ const toolsState = createSlice({
 
         setColor: (state, action) =>{
             state.color = action.payload
-            console.log(action.payload)
         }, 
 
         setLineThickness: (state, action) =>{
